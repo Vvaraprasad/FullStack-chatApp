@@ -6,7 +6,7 @@ import { io } from 'socket.io-client';
 const BASE_URL =
   import.meta.env.MODE === 'development'
     ? 'https://fullstack-chatapp-tmtd.onrender.com'
-    : '/';
+    : 'https://fullstack-chatapp-tmtd.onrender.com';
 
 export const useAuthStore = create((set, get) => ({
   authUser: null,
@@ -55,7 +55,7 @@ export const useAuthStore = create((set, get) => ({
       });
       set({ authUser: res.data });
       toast.success('Logged in successfully');
-      
+
       get().connectSocket();
     } catch (error) {
       toast.error(error.response.data.message);
@@ -109,6 +109,8 @@ export const useAuthStore = create((set, get) => ({
       query: {
         userId: authUser._id,
       },
+      withCredentials: true, // ✅ Ensures JWT cookies are sent
+      transports: ['websocket'],
     });
     socket.connect();
 
