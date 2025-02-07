@@ -23,7 +23,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'http://localhost:5173', // Allow frontend in development
+    origin: ['http://localhost:5173','https://iridescent-heliotrope-d6a235.netlify.app/'], // Allow frontend in development
     credentials: true,
   })
 );
