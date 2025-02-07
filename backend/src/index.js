@@ -23,7 +23,10 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: ['http://localhost:5173','https://iridescent-heliotrope-d6a235.netlify.app/'], // Allow frontend in development
+    origin: [
+      'http://localhost:5173',
+      'https://fullstack-chatapp-14.onrender.com',
+    ], // Allow frontend in development
     credentials: true,
   })
 );
@@ -44,13 +47,15 @@ app.use('/api/messages', messageRouter);
 
 // ✅ Serve frontend only in production
 if (process.env.NODE_ENV === 'production') {
-  const frontendPath = path.join(__dirname, '../frontend/dist');
+  const frontendPath = path.resolve(__dirname, '../frontend/dist');
   app.use(express.static(frontendPath));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.join(frontendPath, 'index.html'));
+    res.sendFile(path.resolve(frontendPath, 'index.html'));
   });
 }
+
+
 
 // Start Server
 const PORT = process.env.PORT || 3000;
