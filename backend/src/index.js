@@ -13,20 +13,20 @@ import messageRouter from './routes/message.route.js';
 // Load environment variables
 dotenv.config();
 
+// Resolve __dirname manually for ES Modules
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.json());
 app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'http://localhost:5173',
+    origin: 'http://localhost:5173', // Allow frontend in development
     credentials: true,
   })
 );
-app.use(express.static(path.join(process.cwd(), 'frontend/build')));
-
-app.get('*', (req, res) => {
-  res.sendFile(path.resolve(process.cwd(), 'frontend', 'build', 'index.html'));
-});
 
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
@@ -38,24 +38,22 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// API Routes
 app.use('/api/auth', authRouter);
 app.use('/api/messages', messageRouter);
 
-const PORT = process.env.PORT;
-
-// Resolve __dirname manually for ES Modules
-import { fileURLToPath } from 'url';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
+// ✅ Serve frontend only in production
 if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  const frontendPath = path.join(__dirname, '../frontend/dist');
+  app.use(express.static(frontendPath));
 
   app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../frontend', 'dist', 'index.html'));
+    res.sendFile(path.join(frontendPath, 'index.html'));
   });
 }
 
+// Start Server
+const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log('Server is running on PORT:', PORT);
   connectDB();
